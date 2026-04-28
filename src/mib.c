@@ -36,7 +36,15 @@ const mib_entry_t *mib_table(size_t *count) {
     return TABLE;
 }
 
+static mib_resolver_fn g_resolver = NULL;
+
+void mib_set_resolver(mib_resolver_fn r) { g_resolver = r; }
+
 proto_err_t mib_get(const char *oid, char *out_value, size_t outsz) {
+    if (g_resolver) {
+        mib_handler_fn h = g_resolver(oid);
+        if (h) return h(out_value, outsz);
+    }
     const mib_entry_t *e = mib_lookup(oid);
     if (!e) return ERR_NO_SUCH_OID;
     if (!e->handler) return ERR_INTERNAL;

@@ -37,4 +37,10 @@ proto_err_t mib_get(const char *oid, char *out_value, size_t outsz);
 /* Default placeholder handler (returns "0"). Useful before collectors land. */
 proto_err_t mib_handler_stub(char *out, size_t outsz);
 
+/* Override resolver: when set, mib_get consults this function first and uses
+ * its returned handler if non-NULL. Lets the agent inject /proc collectors
+ * without mutating the static table. */
+typedef mib_handler_fn (*mib_resolver_fn)(const char *oid);
+void mib_set_resolver(mib_resolver_fn r);
+
 #endif

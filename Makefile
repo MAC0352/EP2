@@ -1,6 +1,6 @@
 CC      ?= cc
 CFLAGS  ?= -std=c11 -O2 -Wall -Wextra -Wpedantic -D_POSIX_C_SOURCE=200809L
-CPPFLAGS = -Iinclude
+CPPFLAGS = -Iinclude -Isrc
 LDFLAGS ?=
 LDLIBS  ?= -lpthread
 
@@ -18,7 +18,6 @@ MANAGER_OBJ := $(MANAGER_SRC:src/%.c=$(OBJ_DIR)/%.o)
 .PHONY: all core agent manager clean
 
 all: core
-	@echo "Phase 1 build: core library only (agent/manager pending)."
 
 core: $(CORE_OBJ)
 
