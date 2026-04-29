@@ -34,6 +34,14 @@ $(BIN_DIR)/manager: $(CORE_OBJ) $(MANAGER_OBJ) | $(BIN_DIR)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 endif
 
+TOOL_SRC := $(wildcard src/tools/*.c)
+TOOL_BIN := $(TOOL_SRC:src/tools/%.c=$(BIN_DIR)/%)
+ifneq ($(strip $(TOOL_SRC)),)
+all: $(TOOL_BIN)
+$(BIN_DIR)/%: src/tools/%.c $(CORE_OBJ) | $(BIN_DIR)
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $< $(CORE_OBJ) -o $@ $(LDLIBS)
+endif
+
 $(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
