@@ -5,6 +5,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <style>
     body { font-family: Arial; padding: 20px; }
     .chart-container { width: 600px; margin-bottom: 40px; }
@@ -14,7 +16,7 @@
 
 <h2>Dynamic OID Dashboard</h2>
 
-<div id="charts"></div>
+<div id="charts"  class="row row-cols-2"></div>
 
 <script>
 const charts = {};
@@ -79,7 +81,7 @@ function buildDashboard(data) {
   oids.forEach(oid => {
     const canvas = document.createElement('canvas');
     const wrapper = document.createElement('div');
-    wrapper.className = 'chart-container';
+    wrapper.className = 'chart-container col';
 
     wrapper.appendChild(canvas);
     container.appendChild(wrapper);
@@ -105,7 +107,7 @@ function buildDashboard(data) {
             }
         },
         responsive: true,
-        parsing: false,
+        parsing: true,
         plugins: {
           title: {
             display: true,
@@ -115,9 +117,10 @@ function buildDashboard(data) {
         
         scales: {
           x: {
+            
             type: 'time',
             time: {
-                unit: 'minute' 
+                unit: 'second' 
             },
             title: {
               display: true,
