@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamic CSV Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .chart-container { width: 600px; margin-bottom: 40px; }
+  </style>
+</head>
+<body>
+
+<h2>Dynamic OID Dashboard</h2>
+
+<div id="charts"></div>
+
+<script>
+const charts = {};
+
+setInterval(() => {
+  fetch('history.csv')
+    .then(res => res.text())
+    .then(csv => {
+      const parsed = Papa.parse(csv, { header: true, dynamicTyping: true });
+      buildDashboard(parsed.data);
+    });
+}, 5000);
+const oids  = [
+  {
+    title: "CPU usage (%)",
+    code: "1.1.1"
+  },
+  {
+    title: "Memory usage (%)",
+    code: "1.1.2"
+  },
+  {
+    title: "Uptime (s)",
+    code: "1.1.3"
+  },
+  {
+    title: "Bytes in",
+    code: "1.2.1"
+  },
+  {
+    title: "Bytes out",
+    code: "1.2.2"
+  },
+  {
+    title: "Conexões TCP ativas",
+    code: "1.3.1"
+  },
+]
+function buildDashboard(data) {
+  const grouped = {};
+
+  // Group data by OID → agent
+  // Group data by OID → agent
+  data.forEach(row => {
+    const { timestamp, agent, oid, value } = row;
+
+    if (!grouped[oid]) grouped[oid] = {};
+    if (!grouped[oid][agent]) grouped[oid][agent] = [];
+
+    grouped[oid][agent].push( 
+        {
+            x: Number(timestamp),
+            y: Number(value)
+
+        }
+    );
+  });
+
+  const container = document.getElementById('charts');
+  container.innerHTML = '';
+  console.log(grouped);
+  oids.forEach(oid => {
+    const canvas = document.createElement('canvas');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'chart-container';
+
+    wrapper.appendChild(canvas);
+    container.appendChild(wrapper);
+
+    const datasets = Object.keys(grouped[oid.code]).map(agent => ({
+      label: agent,
+      data: grouped[oid.code][agent],
+      borderWidth: 2,
+      fill: false
+    }));
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        datasets: datasets
+      },
+      options: {
+        animation: false,
+        transitions: {
+            active: {
+            animation: {
+                duration: 0
+            }
+            }
+        },
+        responsive: true,
+        parsing: false,
+        plugins: {
+          title: {
+            display: true,
+            text: `${oid.title}`
+          }
+        },
+        
+        scales: {
+          x: {
+            type: 'time',
+            time: {
+                unit: 'minute' 
+            },
+            title: {
+              display: true,
+              text: 'Timestamp'
+            }
+          },
+          y: {
+            title: {
+              display: true,
+              text: 'Value'
+            }
+          }
+        }
+      }
+    });
+  });
+}
+</script>
+
+</body>
+</html>
